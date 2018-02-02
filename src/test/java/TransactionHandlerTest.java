@@ -7,6 +7,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -27,7 +29,8 @@ public class TransactionHandlerTest {
     @Test
     public void shouldBeAbleToSaveTheUpdateTheTransactionHistory() throws TransactionExpiredException {
         double amount = 123;
-        Transaction validTransaction = new Transaction(amount, LocalDateTime.now());
+        long transactionTime = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
+        Transaction validTransaction = new Transaction(amount, transactionTime);
 
         transactionHandler.saveTransaction(validTransaction);
         TransactionStats stats = transactionHandler.getCurrentTransactionStats();
@@ -40,9 +43,10 @@ public class TransactionHandlerTest {
 
     @Test
     public void shouldBeThrowExceptionIfTransactionIsExpired() throws TransactionExpiredException {
-        LocalDateTime dateTime = LocalDateTime.now().minusSeconds(61);
+        LocalDateTime dateTime = LocalDateTime.now(Clock.systemUTC()).minusSeconds(61);
         double amount = 123;
-        Transaction transaction = new Transaction(amount, dateTime);
+        Instant instant = dateTime.toInstant(ZoneOffset.UTC);
+        Transaction transaction = new Transaction(amount, instant.toEpochMilli());
         exceptionThrown.expect(TransactionExpiredException.class);
         exceptionThrown.expectMessage("amount:123.0, time:" + dateTime.toEpochSecond(ZoneOffset.UTC));
 

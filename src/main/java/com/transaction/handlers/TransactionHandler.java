@@ -2,18 +2,24 @@ package com.transaction.handlers;
 
 
 import com.transaction.exceptions.TransactionExpiredException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+@Component
 public class TransactionHandler {
     private TransactionStats currentStats;
 
+    @Autowired
     public TransactionHandler() {
         this.currentStats = new TransactionStats();
     }
 
-    public void saveTransaction(Transaction transaction) throws TransactionExpiredException {
+    public void saveTransaction(@RequestBody Transaction transaction) throws TransactionExpiredException {
         if (isTransactionExpired(transaction)) {
             throw new TransactionExpiredException(transaction);
         }
@@ -21,7 +27,8 @@ public class TransactionHandler {
     }
 
     private boolean isTransactionExpired(Transaction transaction) {
-        return ChronoUnit.SECONDS.between(transaction.getTransactionTime(), LocalDateTime.now()) > 60;
+        LocalDateTime transactionTime = transaction.getTransactionDateTime();
+        return ChronoUnit.SECONDS.between(transactionTime, LocalDateTime.now(Clock.systemUTC())) > 60;
     }
 
     private void updateStats(Transaction transaction) {

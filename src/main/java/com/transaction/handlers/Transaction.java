@@ -1,21 +1,33 @@
 package com.transaction.handlers;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class Transaction {
-    private final double amount;
-    private final LocalDateTime transactionTime;
+    private double amount;
+    private long timestamp;
 
-    public Transaction(double amount, LocalDateTime transactionTime) {
+    public Transaction(double amount, long timestamp) {
         this.amount = amount;
-        this.transactionTime = transactionTime;
+        this.timestamp = timestamp;
+    }
+
+    public Transaction() {
     }
 
     public double getAmount() {
         return amount;
     }
 
-    public LocalDateTime getTransactionTime() {
-        return transactionTime;
+    @JsonIgnore
+    public LocalDateTime getTransactionDateTime() {
+        return Instant.ofEpochMilli(timestamp).atOffset(ZoneOffset.UTC).toLocalDateTime();
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }

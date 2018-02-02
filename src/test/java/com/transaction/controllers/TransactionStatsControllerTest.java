@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -31,7 +32,7 @@ public class TransactionStatsControllerTest {
 
     @Test
     public void shouldSaveTheTransactionAndReturnCreatedResponse() throws TransactionExpiredException {
-        Transaction transaction = new Transaction(123.0, LocalDateTime.now());
+        Transaction transaction = new Transaction(123.0, LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli());
 
         ResponseEntity responseEntity = transactionStatsController.saveTransactions(transaction);
 
@@ -41,7 +42,7 @@ public class TransactionStatsControllerTest {
 
     @Test
     public void shouldReturnNonContentResponseIfTransactionExpired() throws TransactionExpiredException {
-        Transaction transaction = new Transaction(123.0, LocalDateTime.now().minusSeconds(61));
+        Transaction transaction = new Transaction(123.0, LocalDateTime.now().minusSeconds(61).toInstant(ZoneOffset.UTC).toEpochMilli());
 
         doThrow(new TransactionExpiredException(transaction))
                 .when(transactionHandler)
