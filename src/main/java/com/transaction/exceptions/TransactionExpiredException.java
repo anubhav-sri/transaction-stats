@@ -1,4 +1,4 @@
-package com.transaction.handlers.exceptions;
+package com.transaction.exceptions;
 
 import com.transaction.handlers.Transaction;
 

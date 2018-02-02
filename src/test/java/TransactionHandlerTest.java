@@ -1,7 +1,7 @@
+import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.handlers.Transaction;
 import com.transaction.handlers.TransactionHandler;
 import com.transaction.handlers.TransactionStats;
-import com.transaction.handlers.exceptions.TransactionExpiredException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

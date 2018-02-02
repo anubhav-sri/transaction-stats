@@ -1,6 +1,7 @@
 package com.transaction.handlers;
 
-import com.transaction.handlers.exceptions.TransactionExpiredException;
+
+import com.transaction.exceptions.TransactionExpiredException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
