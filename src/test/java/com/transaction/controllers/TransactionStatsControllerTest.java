@@ -2,7 +2,7 @@ package com.transaction.controllers;
 
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.handlers.Transaction;
-import com.transaction.handlers.TransactionHandler;
+import com.transaction.handlers.TransactionStatsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,12 +22,12 @@ import static org.mockito.Mockito.verify;
 public class TransactionStatsControllerTest {
 
     @Mock
-    private TransactionHandler transactionHandler;
+    private TransactionStatsService transactionStatsService;
     private TransactionStatsController transactionStatsController;
 
     @Before
     public void setUp() throws Exception {
-        transactionStatsController = new TransactionStatsController(transactionHandler);
+        transactionStatsController = new TransactionStatsController(transactionStatsService);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class TransactionStatsControllerTest {
 
         ResponseEntity responseEntity = transactionStatsController.saveTransactions(transaction);
 
-        verify(transactionHandler).saveTransaction(transaction);
+        verify(transactionStatsService).saveTransaction(transaction);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
@@ -45,12 +45,12 @@ public class TransactionStatsControllerTest {
         Transaction transaction = new Transaction(123.0, LocalDateTime.now().minusSeconds(61).toInstant(ZoneOffset.UTC).toEpochMilli());
 
         doThrow(new TransactionExpiredException(transaction))
-                .when(transactionHandler)
+                .when(transactionStatsService)
                 .saveTransaction(transaction);
 
         ResponseEntity responseEntity = transactionStatsController.saveTransactions(transaction);
 
-        verify(transactionHandler).saveTransaction(transaction);
+        verify(transactionStatsService).saveTransaction(transaction);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 

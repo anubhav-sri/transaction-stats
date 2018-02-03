@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Component
-public class TransactionHandler {
+public class TransactionStatsService {
     private TransactionStats currentStats;
 
     @Autowired
-    public TransactionHandler() {
+    public TransactionStatsService() {
         this.currentStats = new TransactionStats();
     }
 

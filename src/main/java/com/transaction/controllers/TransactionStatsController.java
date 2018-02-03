@@ -2,7 +2,7 @@ package com.transaction.controllers;
 
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.handlers.Transaction;
-import com.transaction.handlers.TransactionHandler;
+import com.transaction.handlers.TransactionStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TransactionStatsController {
-    private TransactionHandler transactionHandler;
+    private TransactionStatsService transactionStatsService;
 
     @Autowired
-    public TransactionStatsController(TransactionHandler transactionHandler) {
-        this.transactionHandler = transactionHandler;
+    public TransactionStatsController(TransactionStatsService transactionStatsService) {
+        this.transactionStatsService = transactionStatsService;
     }
 
     @RequestMapping(value = "/transactions", method = RequestMethod.POST)
     public ResponseEntity saveTransactions(@RequestBody Transaction transaction) {
         try {
-            transactionHandler.saveTransaction(transaction);
+            transactionStatsService.saveTransaction(transaction);
             return ResponseEntity.status(HttpStatus.CREATED).body("");
         } catch (TransactionExpiredException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");

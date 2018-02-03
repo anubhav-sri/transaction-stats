@@ -1,6 +1,6 @@
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.handlers.Transaction;
-import com.transaction.handlers.TransactionHandler;
+import com.transaction.handlers.TransactionStatsService;
 import com.transaction.handlers.TransactionStats;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,15 +15,15 @@ import java.time.ZoneOffset;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
-public class TransactionHandlerTest {
+public class TransactionStatsServiceTest {
 
     @Rule
     public final ExpectedException exceptionThrown = none();
-    private TransactionHandler transactionHandler;
+    private TransactionStatsService transactionStatsService;
 
     @Before
     public void setUp() throws Exception {
-        transactionHandler = new TransactionHandler();
+        transactionStatsService = new TransactionStatsService();
     }
 
     @Test
@@ -32,8 +32,8 @@ public class TransactionHandlerTest {
         long transactionTime = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
         Transaction validTransaction = new Transaction(amount, transactionTime);
 
-        transactionHandler.saveTransaction(validTransaction);
-        TransactionStats stats = transactionHandler.getCurrentTransactionStats();
+        transactionStatsService.saveTransaction(validTransaction);
+        TransactionStats stats = transactionStatsService.getCurrentTransactionStats();
 
         assertThat(stats.getMax()).isEqualTo(amount);
         assertThat(stats.getSum()).isEqualTo(amount);
@@ -50,7 +50,7 @@ public class TransactionHandlerTest {
         exceptionThrown.expect(TransactionExpiredException.class);
         exceptionThrown.expectMessage("amount:123.0, time:" + dateTime.toEpochSecond(ZoneOffset.UTC));
 
-        transactionHandler.saveTransaction(transaction);
+        transactionStatsService.saveTransaction(transaction);
     }
 
     @Test
@@ -59,12 +59,12 @@ public class TransactionHandlerTest {
         long transactionTime = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
         Transaction validTransaction = new Transaction(amount, transactionTime);
 
-        transactionHandler.saveTransaction(validTransaction);
+        transactionStatsService.saveTransaction(validTransaction);
 
-        transactionHandler.refreshStats();
+        transactionStatsService.refreshStats();
 
         TransactionStats expectedStat = new TransactionStats(0, 0, 0, 0);
-        assertThat(transactionHandler.getCurrentTransactionStats()).isEqualTo(expectedStat);
+        assertThat(transactionStatsService.getCurrentTransactionStats()).isEqualTo(expectedStat);
     }
 
 }
