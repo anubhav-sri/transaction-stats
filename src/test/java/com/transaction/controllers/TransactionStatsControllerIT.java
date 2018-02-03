@@ -1,6 +1,8 @@
 package com.transaction.controllers;
 
 import com.transaction.Application;
+import com.transaction.handlers.TransactionStatsService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TransactionStatsControllerIT {
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private TransactionStatsService statsService;
+
+    @Before
+    public void setUp() throws Exception {
+        statsService.resetStats();
+    }
 
     @Test
     public void ShouldReturnHttpStatusCreatedOnSuccessfulSave() throws Exception {
@@ -50,6 +59,29 @@ public class TransactionStatsControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.format("{\"amount\":12.3,\"timestamp\":%s}", Instant.now().toEpochMilli())))
                 .andExpect(status().isCreated());
+
+        this.mockMvc.perform(get("/statistics"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("{\"sum\":12.3,\"avg\":12.3,\"max\":12.3,\"count\":1}"));
+    }
+
+    @Test
+    public void ShouldOnlyConsiderTheTransactionsHappenedInLast60Sec() throws Exception {
+        mockMvc.perform(post("/transactions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("{\"amount\":12.3,\"timestamp\":%s}", Instant.now().toEpochMilli())))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/transactions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("{\"amount\":12.3,\"timestamp\":%s}", Instant.now().toEpochMilli())))
+                .andExpect(status().isCreated());
+
+        Thread.sleep(1000);
+        mockMvc.perform(post("/transactions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("{\"amount\":12.3,\"timestamp\":%s}", Instant.now().toEpochMilli())))
+                .andExpect(status().isCreated());
+
 
         this.mockMvc.perform(get("/statistics"))
                 .andExpect(status().isOk())

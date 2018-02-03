@@ -61,7 +61,7 @@ public class TransactionStatsServiceTest {
 
         transactionStatsService.saveTransaction(validTransaction);
 
-        transactionStatsService.refreshStats();
+        transactionStatsService.resetStats();
 
         TransactionStats expectedStat = new TransactionStats(0, 0, 0, 0);
         assertThat(transactionStatsService.getCurrentTransactionStats()).isEqualTo(expectedStat);

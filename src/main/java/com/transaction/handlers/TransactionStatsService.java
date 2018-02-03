@@ -3,6 +3,7 @@ package com.transaction.handlers;
 
 import com.transaction.exceptions.TransactionExpiredException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -30,9 +31,9 @@ public class TransactionStatsService {
         return currentStats;
     }
 
-    public void refreshStats() {
+    @Scheduled(fixedDelayString = "${transaction.stats.interval.millis}")
+    public void resetStats() {
         this.currentStats = new TransactionStats();
-
     }
 
     private boolean isTransactionExpired(Transaction transaction) {
@@ -46,6 +47,6 @@ public class TransactionStatsService {
         double updateAvg = (updatedSum) / updatedCount;
         double updatedMax = transaction.getAmount() > currentStats.getMax() ? transaction.getAmount() : currentStats.getMax();
 
-        currentStats = new TransactionStats(updateAvg, updatedMax, updatedSum, updatedCount);
+        currentStats = new TransactionStats(updatedSum, updateAvg, updatedMax, updatedCount);
     }
 }
