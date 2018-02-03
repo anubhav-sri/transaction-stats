@@ -5,7 +5,6 @@ import com.transaction.exceptions.TransactionExpiredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ public class TransactionStatsService {
         this.currentStats = new TransactionStats();
     }
 
-    public void saveTransaction(@RequestBody Transaction transaction) throws TransactionExpiredException {
+    public void saveTransaction(Transaction transaction) throws TransactionExpiredException {
         if (isTransactionExpired(transaction)) {
             throw new TransactionExpiredException(transaction);
         }
