@@ -12,7 +12,8 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE",
+            "org.projectlombok:lombok:1.16.8")
 
     testCompile("junit:junit:4.12",
             "org.assertj:assertj-core:3.8.0",

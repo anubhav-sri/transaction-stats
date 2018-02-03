@@ -33,7 +33,7 @@ public class TransactionStatsControllerIT {
                 .andExpect(status().isCreated())
                 .andExpect(content().string(""));
     }
-    
+
     @Test
     public void ShouldReturnHttpStatusNoContentTransactionISExpired() throws Exception {
         this.mockMvc.perform(post("/transactions")

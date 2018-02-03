@@ -53,4 +53,18 @@ public class TransactionHandlerTest {
         transactionHandler.saveTransaction(transaction);
     }
 
+    @Test
+    public void shouldRefreshStats() throws TransactionExpiredException {
+        double amount = 123;
+        long transactionTime = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
+        Transaction validTransaction = new Transaction(amount, transactionTime);
+
+        transactionHandler.saveTransaction(validTransaction);
+
+        transactionHandler.refreshStats();
+
+        TransactionStats expectedStat = new TransactionStats(0, 0, 0, 0);
+        assertThat(transactionHandler.getCurrentTransactionStats()).isEqualTo(expectedStat);
+    }
+
 }

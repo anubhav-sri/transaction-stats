@@ -26,6 +26,15 @@ public class TransactionHandler {
         updateStats(transaction);
     }
 
+    public TransactionStats getCurrentTransactionStats() {
+        return currentStats;
+    }
+
+    public void refreshStats() {
+        this.currentStats = new TransactionStats();
+
+    }
+
     private boolean isTransactionExpired(Transaction transaction) {
         LocalDateTime transactionTime = transaction.getTransactionDateTime();
         return ChronoUnit.SECONDS.between(transactionTime, LocalDateTime.now(Clock.systemUTC())) > 60;
@@ -38,9 +47,5 @@ public class TransactionHandler {
         double updatedMax = transaction.getAmount() > currentStats.getMax() ? transaction.getAmount() : currentStats.getMax();
 
         currentStats = new TransactionStats(updateAvg, updatedMax, updatedSum, updatedCount);
-    }
-
-    public TransactionStats getCurrentTransactionStats() {
-        return currentStats;
     }
 }
