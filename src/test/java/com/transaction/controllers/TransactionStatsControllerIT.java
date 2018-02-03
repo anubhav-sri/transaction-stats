@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,5 +42,17 @@ public class TransactionStatsControllerIT {
                 .content(String.format("{\"amount\":12.3,\"timestamp\":%s}", Instant.now().minusSeconds(61).toEpochMilli())))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
+    }
+
+    @Test
+    public void ShouldGetTheTransactionStats() throws Exception {
+        mockMvc.perform(post("/transactions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("{\"amount\":12.3,\"timestamp\":%s}", Instant.now().toEpochMilli())))
+                .andExpect(status().isCreated());
+
+        this.mockMvc.perform(get("/statistics"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("{\"sum\":12.3,\"avg\":12.3,\"max\":12.3,\"count\":1}"));
     }
 }

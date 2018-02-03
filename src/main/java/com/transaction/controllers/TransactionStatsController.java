@@ -2,6 +2,7 @@ package com.transaction.controllers;
 
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.handlers.Transaction;
+import com.transaction.handlers.TransactionStats;
 import com.transaction.handlers.TransactionStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,5 +29,10 @@ public class TransactionStatsController {
         } catch (TransactionExpiredException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
         }
+    }
+
+    @RequestMapping(value = "/statistics")
+    public TransactionStats getStatistics() {
+        return transactionStatsService.getCurrentTransactionStats();
     }
 }
