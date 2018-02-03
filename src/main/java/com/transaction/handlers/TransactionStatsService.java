@@ -40,7 +40,7 @@ public class TransactionStatsService {
         return ChronoUnit.SECONDS.between(transactionTime, LocalDateTime.now(Clock.systemUTC())) > 60;
     }
 
-    private void updateStats(Transaction transaction) {
+    private synchronized void updateStats(Transaction transaction) {
         double updatedSum = currentStats.getSum() + transaction.getAmount();
         int updatedCount = currentStats.getCount() + 1;
         double updateAvg = (updatedSum) / updatedCount;
