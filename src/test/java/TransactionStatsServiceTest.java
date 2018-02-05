@@ -21,10 +21,11 @@ public class TransactionStatsServiceTest {
     @Rule
     public final ExpectedException exceptionThrown = none();
     private TransactionStatsService transactionStatsService;
+    private Clock clock = Clock.systemUTC();
 
     @Before
     public void setUp() throws Exception {
-        transactionStatsService = new TransactionStatsService(new TransactionDatabase());
+        transactionStatsService = new TransactionStatsService(new TransactionDatabase(), clock);
     }
 
     @Test
@@ -44,10 +45,9 @@ public class TransactionStatsServiceTest {
 
     @Test
     public void shouldBeThrowExceptionIfTransactionIsExpired() throws TransactionExpiredException {
-        LocalDateTime dateTime = LocalDateTime.now(Clock.systemUTC()).minusSeconds(61);
+        LocalDateTime dateTime = LocalDateTime.now(clock).minusSeconds(61);
         double amount = 123;
-        Instant instant = dateTime.toInstant(ZoneOffset.UTC);
-        Transaction transaction = new Transaction(amount, instant.toEpochMilli());
+        Transaction transaction = new Transaction(amount, dateTime.toInstant(ZoneOffset.UTC).toEpochMilli());
         exceptionThrown.expect(TransactionExpiredException.class);
         exceptionThrown.expectMessage("amount:123.0, time:" + dateTime.toEpochSecond(ZoneOffset.UTC));
 

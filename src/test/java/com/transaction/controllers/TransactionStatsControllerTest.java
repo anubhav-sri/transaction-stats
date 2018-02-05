@@ -11,6 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -32,7 +33,7 @@ public class TransactionStatsControllerTest {
 
     @Test
     public void shouldSaveTheTransactionAndReturnCreatedResponse() throws TransactionExpiredException {
-        Transaction transaction = new Transaction(123.0, LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli());
+        Transaction transaction = new Transaction(123.0, Clock.systemUTC().millis());
 
         ResponseEntity responseEntity = transactionStatsController.saveTransactions(transaction);
 
