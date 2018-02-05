@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Component
 public class TransactionStatsService {
@@ -42,8 +40,7 @@ public class TransactionStatsService {
     }
 
     private boolean isTransactionExpired(Transaction transaction) {
-        LocalDateTime transactionTime = transaction.getTransactionDateTime();
-        return ChronoUnit.SECONDS.between(transactionTime, LocalDateTime.now(clock)) > 60;
+        return clock.millis() - transaction.getTimestamp() > TIME_TO_CONSIDER_FOR_STATS;
     }
 
     private synchronized void updateStats(Transaction transaction) {
