@@ -1,7 +1,8 @@
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.handlers.Transaction;
-import com.transaction.handlers.TransactionStatsService;
+import com.transaction.handlers.TransactionDatabase;
 import com.transaction.handlers.TransactionStats;
+import com.transaction.handlers.TransactionStatsService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,17 +24,17 @@ public class TransactionStatsServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        transactionStatsService = new TransactionStatsService();
+        transactionStatsService = new TransactionStatsService(new TransactionDatabase());
     }
 
     @Test
     public void shouldBeAbleToSaveTheUpdateTheTransactionHistory() throws TransactionExpiredException {
         double amount = 123;
-        long transactionTime = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
+        long transactionTime = Instant.now(Clock.systemUTC()).toEpochMilli();
         Transaction validTransaction = new Transaction(amount, transactionTime);
 
         transactionStatsService.saveTransaction(validTransaction);
-        TransactionStats stats = transactionStatsService.getCurrentTransactionStats();
+        TransactionStats stats = transactionStatsService.getCurrentStats();
 
         assertThat(stats.getMax()).isEqualTo(amount);
         assertThat(stats.getSum()).isEqualTo(amount);
@@ -51,20 +52,6 @@ public class TransactionStatsServiceTest {
         exceptionThrown.expectMessage("amount:123.0, time:" + dateTime.toEpochSecond(ZoneOffset.UTC));
 
         transactionStatsService.saveTransaction(transaction);
-    }
-
-    @Test
-    public void shouldRefreshStats() throws TransactionExpiredException {
-        double amount = 123;
-        long transactionTime = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
-        Transaction validTransaction = new Transaction(amount, transactionTime);
-
-        transactionStatsService.saveTransaction(validTransaction);
-
-        transactionStatsService.resetStats();
-
-        TransactionStats expectedStat = new TransactionStats(0, 0, 0, 0);
-        assertThat(transactionStatsService.getCurrentTransactionStats()).isEqualTo(expectedStat);
     }
 
 }

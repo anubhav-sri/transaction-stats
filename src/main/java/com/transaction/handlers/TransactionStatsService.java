@@ -3,20 +3,21 @@ package com.transaction.handlers;
 
 import com.transaction.exceptions.TransactionExpiredException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Component
 public class TransactionStatsService {
-    private TransactionStats currentStats;
+    private static final int TIME_TO_CONSIDER_FOR_STATS = 60000;
+    private TransactionDatabase transactionMap;
 
     @Autowired
-    public TransactionStatsService() {
-        this.currentStats = new TransactionStats();
+    public TransactionStatsService(TransactionDatabase transactionMap) {
+        this.transactionMap = transactionMap;
     }
 
     public void saveTransaction(Transaction transaction) throws TransactionExpiredException {
@@ -26,13 +27,17 @@ public class TransactionStatsService {
         updateStats(transaction);
     }
 
-    public TransactionStats getCurrentTransactionStats() {
-        return currentStats;
-    }
+    public TransactionStats getCurrentStats() {
+        long currentMillis = Instant.now(Clock.systemUTC()).toEpochMilli();
+        long lastMillisToConsider = currentMillis - TIME_TO_CONSIDER_FOR_STATS;
+        TransactionStats transactionStats = new TransactionStats();
 
-    @Scheduled(fixedDelayString = "${transaction.stats.interval.millis}")
-    public void resetStats() {
-        this.currentStats = new TransactionStats();
+        for (long millisToStartCount = lastMillisToConsider; millisToStartCount <= currentMillis; millisToStartCount++) {
+            if (transactionMap.containsKey(millisToStartCount)) {
+                transactionStats.add(transactionMap.get(millisToStartCount));
+            }
+        }
+        return transactionStats;
     }
 
     private boolean isTransactionExpired(Transaction transaction) {
@@ -41,11 +46,6 @@ public class TransactionStatsService {
     }
 
     private synchronized void updateStats(Transaction transaction) {
-        double updatedSum = currentStats.getSum() + transaction.getAmount();
-        int updatedCount = currentStats.getCount() + 1;
-        double updateAvg = (updatedSum) / updatedCount;
-        double updatedMax = transaction.getAmount() > currentStats.getMax() ? transaction.getAmount() : currentStats.getMax();
-
-        currentStats = new TransactionStats(updatedSum, updateAvg, updatedMax, updatedCount);
+        transactionMap.put(transaction.getTimestamp(), transaction);
     }
 }

@@ -33,6 +33,6 @@ public class TransactionStatsController {
 
     @RequestMapping(value = "/statistics")
     public TransactionStats getStatistics() {
-        return transactionStatsService.getCurrentTransactionStats();
+        return transactionStatsService.getCurrentStats();
     }
 }
