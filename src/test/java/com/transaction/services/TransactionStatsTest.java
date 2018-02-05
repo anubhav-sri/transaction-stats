@@ -1,5 +1,7 @@
-package com.transaction.handlers;
+package com.transaction.services;
 
+import com.transaction.models.Transaction;
+import com.transaction.models.TransactionStats;
 import org.junit.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

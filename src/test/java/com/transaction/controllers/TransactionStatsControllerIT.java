@@ -1,7 +1,7 @@
 package com.transaction.controllers;
 
 import com.transaction.Application;
-import com.transaction.handlers.TransactionDatabase;
+import com.transaction.services.TransactionDatabase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

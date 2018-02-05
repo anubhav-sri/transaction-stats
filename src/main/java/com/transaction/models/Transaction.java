@@ -1,4 +1,4 @@
-package com.transaction.handlers;
+package com.transaction.models;
 
 public class Transaction {
     private double amount;

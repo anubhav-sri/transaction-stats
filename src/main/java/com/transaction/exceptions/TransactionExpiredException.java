@@ -1,6 +1,7 @@
 package com.transaction.exceptions;
 
-import com.transaction.handlers.Transaction;
+
+import com.transaction.models.Transaction;
 
 public class TransactionExpiredException extends Exception {
     public TransactionExpiredException(Transaction transaction) {

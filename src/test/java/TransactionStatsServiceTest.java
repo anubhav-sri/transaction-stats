@@ -1,8 +1,8 @@
 import com.transaction.exceptions.TransactionExpiredException;
-import com.transaction.handlers.Transaction;
-import com.transaction.handlers.TransactionDatabase;
-import com.transaction.handlers.TransactionStats;
-import com.transaction.handlers.TransactionStatsService;
+import com.transaction.models.Transaction;
+import com.transaction.models.TransactionStats;
+import com.transaction.services.TransactionDatabase;
+import com.transaction.services.TransactionStatsService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

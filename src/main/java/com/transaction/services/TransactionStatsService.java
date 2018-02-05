@@ -1,7 +1,9 @@
-package com.transaction.handlers;
+package com.transaction.services;
 
 
 import com.transaction.exceptions.TransactionExpiredException;
+import com.transaction.models.Transaction;
+import com.transaction.models.TransactionStats;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,9 +1,9 @@
 package com.transaction.controllers;
 
 import com.transaction.exceptions.TransactionExpiredException;
-import com.transaction.handlers.Transaction;
-import com.transaction.handlers.TransactionStats;
-import com.transaction.handlers.TransactionStatsService;
+import com.transaction.models.Transaction;
+import com.transaction.models.TransactionStats;
+import com.transaction.services.TransactionStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

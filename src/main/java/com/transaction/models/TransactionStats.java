@@ -1,4 +1,4 @@
-package com.transaction.handlers;
+package com.transaction.models;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

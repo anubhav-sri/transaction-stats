@@ -1,8 +1,8 @@
 package com.transaction.controllers;
 
 import com.transaction.exceptions.TransactionExpiredException;
-import com.transaction.handlers.Transaction;
-import com.transaction.handlers.TransactionStatsService;
+import com.transaction.models.Transaction;
+import com.transaction.services.TransactionStatsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
