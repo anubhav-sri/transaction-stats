@@ -7,15 +7,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TransactionsServiceTest {
 
     @Rule
@@ -23,24 +26,38 @@ public class TransactionsServiceTest {
     private TransactionsService transactionsService;
     private Clock clock = Clock.systemUTC();
 
+    private TransactionDatabase transactionDatabase;
+
     @Before
     public void setUp() throws Exception {
-        transactionsService = new TransactionsService(new TransactionDatabase(), clock);
+        transactionDatabase = new TransactionDatabase();
+        transactionsService = new TransactionsService(transactionDatabase, clock);
     }
 
     @Test
-    public void shouldBeAbleToSaveTheUpdateTheTransactionHistory() throws TransactionExpiredException {
+    public void shouldSaveTheTransaction() throws TransactionExpiredException {
         double amount = 123;
         long transactionTime = Instant.now(Clock.systemUTC()).toEpochMilli();
         Transaction validTransaction = new Transaction(amount, transactionTime);
 
         transactionsService.saveTransaction(validTransaction);
-        TransactionStats stats = transactionsService.getCurrentStats();
+        assertThat(transactionDatabase.get(transactionTime)).isEqualTo(validTransaction);
+    }
 
-        assertThat(stats.getMax()).isEqualTo(amount);
-        assertThat(stats.getSum()).isEqualTo(amount);
-        assertThat(stats.getAvg()).isEqualTo(amount);
-        assertThat(stats.getCount()).isEqualTo(1);
+    @Test
+    public void shouldGetTheCurrentStatsFromCalculator() throws TransactionExpiredException {
+        double amount = 123;
+        long transactionTime = Instant.now(Clock.systemUTC()).toEpochMilli();
+        long staleTransactionTime = Instant.now(Clock.systemUTC()).minusSeconds(61).toEpochMilli();
+        Transaction validTransaction = new Transaction(amount, transactionTime);
+        Transaction staleTransaction = new Transaction(amount, staleTransactionTime);
+        transactionDatabase.put(transactionTime, validTransaction);
+        transactionDatabase.put(transactionTime, staleTransaction);
+
+        TransactionStats transactionStats = new TransactionStats(123, 123, 123, 1);
+
+        TransactionStats currentStats = transactionsService.getCurrentStats();
+        assertThat(currentStats).isEqualTo(transactionStats);
     }
 
     @Test
