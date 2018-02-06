@@ -45,7 +45,7 @@ public class TransactionsServiceTest {
     }
 
     @Test
-    public void shouldGetTheCurrentStatsFromCalculator() throws TransactionExpiredException {
+    public void shouldConsiderLast60SecTransactionsInStats() throws TransactionExpiredException {
         double amount = 123;
         long transactionTime = Instant.now(Clock.systemUTC()).toEpochMilli();
         long staleTransactionTime = Instant.now(Clock.systemUTC()).minusSeconds(61).toEpochMilli();
