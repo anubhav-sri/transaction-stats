@@ -1,4 +1,4 @@
-package com.transaction.services;
+package com.transaction.persistence;
 
 import com.transaction.models.Transaction;
 

@@ -2,7 +2,7 @@ package com.transaction.controllers;
 
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.models.Transaction;
-import com.transaction.services.TransactionStatsService;
+import com.transaction.services.TransactionsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,12 +23,12 @@ import static org.mockito.Mockito.verify;
 public class TransactionStatsControllerTest {
 
     @Mock
-    private TransactionStatsService transactionStatsService;
+    private TransactionsService transactionsService;
     private TransactionStatsController transactionStatsController;
 
     @Before
     public void setUp() throws Exception {
-        transactionStatsController = new TransactionStatsController(transactionStatsService);
+        transactionStatsController = new TransactionStatsController(transactionsService);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class TransactionStatsControllerTest {
 
         ResponseEntity responseEntity = transactionStatsController.saveTransactions(transaction);
 
-        verify(transactionStatsService).saveTransaction(transaction);
+        verify(transactionsService).saveTransaction(transaction);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
@@ -46,12 +46,12 @@ public class TransactionStatsControllerTest {
         Transaction transaction = new Transaction(123.0, LocalDateTime.now().minusSeconds(61).toInstant(ZoneOffset.UTC).toEpochMilli());
 
         doThrow(new TransactionExpiredException(transaction))
-                .when(transactionStatsService)
+                .when(transactionsService)
                 .saveTransaction(transaction);
 
         ResponseEntity responseEntity = transactionStatsController.saveTransactions(transaction);
 
-        verify(transactionStatsService).saveTransaction(transaction);
+        verify(transactionsService).saveTransaction(transaction);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 

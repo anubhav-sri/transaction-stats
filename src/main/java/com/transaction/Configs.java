@@ -1,6 +1,6 @@
 package com.transaction;
 
-import com.transaction.services.TransactionDatabase;
+import com.transaction.persistence.TransactionDatabase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

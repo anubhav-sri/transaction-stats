@@ -1,8 +1,8 @@
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.models.Transaction;
 import com.transaction.models.TransactionStats;
-import com.transaction.services.TransactionDatabase;
-import com.transaction.services.TransactionStatsService;
+import com.transaction.persistence.TransactionDatabase;
+import com.transaction.services.TransactionsService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,16 +16,16 @@ import java.time.ZoneOffset;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
-public class TransactionStatsServiceTest {
+public class TransactionsServiceTest {
 
     @Rule
     public final ExpectedException exceptionThrown = none();
-    private TransactionStatsService transactionStatsService;
+    private TransactionsService transactionsService;
     private Clock clock = Clock.systemUTC();
 
     @Before
     public void setUp() throws Exception {
-        transactionStatsService = new TransactionStatsService(new TransactionDatabase(), clock);
+        transactionsService = new TransactionsService(new TransactionDatabase(), clock);
     }
 
     @Test
@@ -34,8 +34,8 @@ public class TransactionStatsServiceTest {
         long transactionTime = Instant.now(Clock.systemUTC()).toEpochMilli();
         Transaction validTransaction = new Transaction(amount, transactionTime);
 
-        transactionStatsService.saveTransaction(validTransaction);
-        TransactionStats stats = transactionStatsService.getCurrentStats();
+        transactionsService.saveTransaction(validTransaction);
+        TransactionStats stats = transactionsService.getCurrentStats();
 
         assertThat(stats.getMax()).isEqualTo(amount);
         assertThat(stats.getSum()).isEqualTo(amount);
@@ -51,7 +51,7 @@ public class TransactionStatsServiceTest {
         exceptionThrown.expect(TransactionExpiredException.class);
         exceptionThrown.expectMessage("amount:123.0, time:" + dateTime.toEpochSecond(ZoneOffset.UTC));
 
-        transactionStatsService.saveTransaction(transaction);
+        transactionsService.saveTransaction(transaction);
     }
 
 }

@@ -4,19 +4,20 @@ package com.transaction.services;
 import com.transaction.exceptions.TransactionExpiredException;
 import com.transaction.models.Transaction;
 import com.transaction.models.TransactionStats;
+import com.transaction.persistence.TransactionDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 
 @Component
-public class TransactionStatsService {
+public class TransactionsService {
     private static final int TIME_TO_CONSIDER_FOR_STATS = 60000;
     private TransactionDatabase transactionMap;
     private Clock clock;
 
     @Autowired
-    public TransactionStatsService(TransactionDatabase transactionMap, Clock clock) {
+    public TransactionsService(TransactionDatabase transactionMap, Clock clock) {
         this.transactionMap = transactionMap;
         this.clock = clock;
     }
